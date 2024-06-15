@@ -28,6 +28,7 @@ pypdf2 = "*"
 langchain_openai = "*"
 langchain_pinecone = "*"
 langchainhub = "*"
+chromadb = "*"
 
 [dev-packages]
 
