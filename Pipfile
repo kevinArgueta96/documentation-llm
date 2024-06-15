@@ -26,6 +26,8 @@ ollama = "*"
 huggingface-hub = "*"
 pypdf2 = "*"
 langchain_openai = "*"
+langchain_pinecone = "*"
+langchainhub = "*"
 
 [dev-packages]
 
