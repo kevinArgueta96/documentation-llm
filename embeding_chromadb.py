@@ -6,7 +6,6 @@ from langchain.llms import OpenAI
 from langchain.chains import VectorDBQA
 from dotenv import load_dotenv
 
-
 ## NEW UPLOAD PINECONE LIBRARIES
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
@@ -14,6 +13,7 @@ from langchain_community.document_loaders import PyPDFLoader
 load_dotenv()
 
 import os
+
 
 def ingest_docs():
     # load PDF file using loaders from langchain
@@ -32,20 +32,27 @@ def ingest_docs():
     persist_directory = 'db'
 
     embedding = OpenAIEmbeddings()
-    vectordb = Chroma.from_documents(documents=docs, embedding=embedding, persist_directory=persist_directory)
+    vectordb = Chroma.from_documents(documents=docs,
+                                     embedding=embedding,
+                                     persist_directory=persist_directory
+                                     # ,separators=["\n\n", "\n", " ", ""]
+                                     )
 
     vectordb.persist()
     print("****Loading to vectorstore done ***")
+
 
 def callDBfuncition():
     persist_directory = 'db'
     embedding = OpenAIEmbeddings()
     vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+
     qa = VectorDBQA.from_chain_type(llm=OpenAI(), chain_type="stuff", vectorstore=vectordb)
 
-    query = "Puedes decirme cuantas horas laborales se tienen que trabajar, extiendete en la respuesta"
+    query = ("Dime que articulo habla sobre las horas de trabajo y dime de donde obtiens la informacion")
     response = qa.run(query)
     print(response)
+
 
 if __name__ == "__main__":
     #ingest_docs()

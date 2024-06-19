@@ -33,7 +33,7 @@ if __name__ == "__main__":
     #query = "¿Qué estipula el artículo 13 sobre la contratación de trabajadores guatemaltecos en comparación con trabajadores extranjeros?"
     #query = "¿Cuales son las horas que un trabajador debe tener y que jornadas existen?, si puedes extenderte, hazlo"
     #query = "¿Cuales son las horas que un trabajador debe tener y que jornadas existen?, si puedes extenderte, hazlo"
-    query = "Cuantas hpras laborales son las que un trabajador debe laboral"
+    query = "Porque razones me pueden despedir"
     embeddings = OpenAIEmbeddings()
     llm = Ollama(model="mistral")
     # llm = ChatOpenAI()
