@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from typing import Any, List, Dict
 
 from dotenv import load_dotenv
 from langchain_community.llms.ollama import Ollama
@@ -13,44 +13,50 @@ from consts import INDEX_NAME
 
 load_dotenv()
 
-template = """Use the following pieces of context to answer the question at the end.
+template = """
+Usa las siguientes piezas de contexto para responder la pregunta al final.
 
-        If you don't know the answer, just say that you don't know, don't try to make up an answer
-        Use three sentences maximum and keep the answer as concise as possible.
+Si no sabes la respuesta, simplemente di que no sabes, no intentes inventar una respuesta.
+Usa un máximo de tres oraciones y mantén la respuesta lo más concisa posible.
 
-        Always say "Gracias por preguntar!" at the end of the answer.
-        Always response in spanish language
+Siempre di "¡Gracias por preguntar!" al final de la respuesta.
+Responde siempre en español.
 
-        If you have the source of the answer, said (Obtenida de: "SET HER THE URL OR SOURCE))
-        {context}
+Si tienes la fuente de la respuesta, di (Obtenida de: "AQUÍ LA URL O FUENTE").
 
-        Question: {question}
+Contexto disponible:
+{context}
 
-        Helpful Answer:"""
+Pregunta: {question}
+
+Usa el siguiente historial de conversación para proporcionar una respuesta informada:
+{chat_history}
+
+Respuesta útil:
+"""
 
 pc = Pinecone(
     api_key=os.environ.get("PINECONE_API_KEY"),
 )
 
 
-def runLLM(query: str) -> Any:
+def runLLM(query: str, chat_history: List[Dict[str, Any]] = []):
     embedding = OpenAIEmbeddings()
-    #llm = ChatOpenAI(verbose=True,temperature=0)
-    llm = Ollama(model="mistral",verbose=True,temperature=0,)
+    # llm = ChatOpenAI(verbose=True,temperature=0)
+    llm = Ollama(model="llama3", verbose=True, temperature=0)
 
     vectorstore = PineconeVectorStore(embedding=embedding, index_name=INDEX_NAME)
 
+    print(chat_history)
     custom_rag_prompt = ChatPromptTemplate.from_template(template)
     rag_chain = (
-            {"context": vectorstore.as_retriever(), "question": RunnablePassthrough()}
+            {"context": vectorstore.as_retriever(), "question": RunnablePassthrough(),
+             "chat_history": RunnablePassthrough(lambda _: chat_history)}
             | custom_rag_prompt
             | llm
     )
 
-    res = rag_chain.invoke(query)
-
-    return res
-
+    return rag_chain.invoke(query)
 
 if __name__ == "__main__":
     runLLM("Cuantas vacaciones por ley tiene que tener un empleado")
