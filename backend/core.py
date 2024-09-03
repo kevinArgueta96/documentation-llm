@@ -42,8 +42,8 @@ pc = Pinecone(
 
 def runLLM(query: str, chat_history: List[Dict[str, Any]] = []):
     embedding = OpenAIEmbeddings()
-    # llm = ChatOpenAI(verbose=True,temperature=0)
-    llm = Ollama(model="llama3", verbose=True, temperature=0)
+    llm = ChatOpenAI(verbose=True,temperature=0)
+    # llm = Ollama(model="llama3", verbose=True, temperature=0)
 
     vectorstore = PineconeVectorStore(embedding=embedding, index_name=INDEX_NAME)
 
